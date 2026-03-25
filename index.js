@@ -5,7 +5,7 @@ const insta = require('instagram-scraping');
 const CONFIG = {
   token: process.env.TOKEN,
   channelId: "1469593862774194176",
-  username: "the_rgyt"
+  username: "jaibalayya.143"
 };
 
 const client = new Client({
