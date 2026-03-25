@@ -3,7 +3,7 @@ const cron = require('node-cron');
 const insta = require('instagram-scraping');
 
 const CONFIG = {
-  token: process.env.TOKEN ,
+  token: process.env.TOKEN,
   channelId: "1469593862774194176",
   username: "the_rgyt"
 };
@@ -18,12 +18,14 @@ client.once('clientReady', () => {
   console.log(`✅ Logged in as ${client.user.tag}`);
 });
 
-// check every 1 minute
-cron.schedule('* * * * *', async () => {
+async function checkInstagram() {
   try {
     const data = await insta.scrapeUserPage(CONFIG.username);
 
-    if (!data.medias || data.medias.length === 0) return;
+    if (!data.medias || data.medias.length === 0) {
+      console.log("⚠️ No posts found or blocked");
+      return;
+    }
 
     const latest = data.medias[0].shortcode;
 
@@ -38,8 +40,14 @@ cron.schedule('* * * * *', async () => {
     lastPost = latest;
 
   } catch (err) {
-    console.log("Error:", err.message);
+    console.log("⚠️ Instagram blocked, retrying...");
   }
-});
+}
+
+// every 1 minute
+cron.schedule('* * * * *', checkInstagram);
+
+// backup check every 30 sec
+setInterval(checkInstagram, 30000);
 
 client.login(CONFIG.token);
